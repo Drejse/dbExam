@@ -1,5 +1,8 @@
 import Layout from '../components/Layout';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { fetchSupabase } from './mappers/fetchAllSupabase';
+import { fetchAllComments } from './mappers/fetchAllComments';
+import { fetchNeo4j } from '../lib/neo4jConnector'
 
 type Props = {
   posts: [Post]
@@ -12,14 +15,34 @@ type Post = {
 }
 
 export async function getServerSideProps() {
-  console.log("der er hul igennem")
+
+  console.log("der er hul igennem fra index.tsx - getserversideprops")
   try {
+
+    console.log("useeffekt er god")
+    const supabaseFetch = async () => {
+      const result = await fetchSupabase();
+      console.log(result);
+    };
+
+    const fetchAllCommentsFetch = async () => {
+      const result = await fetchAllComments();
+      console.log(result);
+    };
+
+    const neo4jFetch = async () => {
+      const result = await fetchNeo4j();
+      console.log(result);
+    };
     let response = await fetch('http://localhost:3000/api/getPosts');
     let posts = await response.json();
-    
+    neo4jFetch();
+      supabaseFetch();
+      fetchAllCommentsFetch();
     return {
       props: { posts: JSON.parse(JSON.stringify(posts)) },
     };
+    
    
   } catch (e) {
     console.error(e);
@@ -32,6 +55,8 @@ export async function getServerSideProps() {
 
 
 export default function Posts(props: Props) {
+
+  
 
   const [posts, setPosts] = useState<[Post]>(props.posts);
 
