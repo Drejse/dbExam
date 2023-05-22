@@ -4,6 +4,7 @@ import { fetchAllComments } from '../mappers/fetchAllComments';
 import { fetchNeo4j } from '../../lib/neo4jConnector';
 
 import { purchaseItem } from '../mappers/purchaseItem';
+import { supabase } from '../../lib/supabaseConnector';
 
 import 'bootstrap/dist/css/bootstrap.css';
 
@@ -19,6 +20,7 @@ type Post = {
   description: String;
   price: String;
 }
+
 
 export async function getServerSideProps() {
 
@@ -56,36 +58,34 @@ export async function getServerSideProps() {
       props: { posts: [] },
     };
   }
+
+
+
+
 }
 
 
 
 export default function Posts(props: Props) {
 
+  const [user, setUser] = useState<String | any>();
+
+  useEffect(() => {
+    supabase.auth.getSession().then((session) => {
+
+      setUser(session.data.session?.access_token)
+
+      console.log(user)
+
+    });
+  }, []);
 
 
   const [posts, setPosts] = useState<[Post]>(props.posts);
 
-  const handleDeletePost = async (postId: string) => {
-    try {
-      let response = await fetch('http://localhost:3000/api/deletePost?id=' + postId, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json, text/plain, */*',
-          'Content-Type': 'application/json'
-        }
-      });
-      response = await response.json();
-      window.location.reload();
-    } catch (error) {
-      console.log('An error occurred while deleting ', error);
-    }
-  }
-
-  { console.log(posts) }
 
   const test = (id: String, name: String) => {
-    purchaseItem(id, name)
+    purchaseItem(id, name, user)
   }
 
 
