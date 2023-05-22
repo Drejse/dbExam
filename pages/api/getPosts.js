@@ -3,10 +3,10 @@ import clientPromise from "../../lib/mongodb";
 export default async (req, res) => {
     try {
         const client = await clientPromise;
-        const db = client.db("firstDataBase");
+        const db = client.db("amazon");
 
         const posts = await db
-            .collection("users")
+            .collection("products")
             .find({})
             .limit(20)
             .toArray();

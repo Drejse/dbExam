@@ -10,8 +10,8 @@ type Props = {
 
 type Post = {
   _id: String;
-  title: String;
-  content: String;
+  product_name: String;
+  price: String;
 }
 
 export async function getServerSideProps() {
@@ -24,7 +24,7 @@ export async function getServerSideProps() {
       const result = await fetchSupabase();
       console.log(result);
     };
-
+    
     const fetchAllCommentsFetch = async () => {
       const result = await fetchAllComments();
       console.log(result);
@@ -87,8 +87,8 @@ export default function Posts(props: Props) {
                 return (
                   <li key={index} className="post-item">
                     <div className="post-item-details">
-                      <h2>{post.title}</h2>
-                      <p>{post.content}</p>
+                      <h3>{post.product_name}</h3>
+                      <p>{post.price}</p>
                     </div>
                     <div className="post-item-actions">
                       <a href={`/posts/${post._id} `}>Edit</a>
