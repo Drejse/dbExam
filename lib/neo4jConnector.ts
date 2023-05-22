@@ -5,18 +5,18 @@ const user = 'neo4j';
 const password = '12345678';
 
 const driver = neo4j.driver(uri, neo4j.auth.basic(user, password));
-const session = driver.session();
+export const session = driver.session();
 
 export const fetchNeo4j = async () => {
-    try {
-      const result = await session.run('MATCH (t:test) RETURN t');
-      const data = result.records.map(record => record.get('t').properties);
-      return data;
-    } catch (error) {
-      console.error(error);
-    } finally {
-      session.close();
-    }
-  };
-
+  try {
+    const result = await session.run('MATCH (n) RETURN n LIMIT 5');
+    const data = result.records.map(record => record.get('n').properties);
+    return data;
+  } catch (error) {
+    console.error(error);
+  } finally {
+    session.close();
+    driver.close();
+  }
+};
 

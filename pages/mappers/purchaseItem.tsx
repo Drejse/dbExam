@@ -7,8 +7,4 @@ export const purchaseItem = async (id: String, name: String, user: String) => {
         .insert([
             { product_name: name, product_id: id, user_token: user },
         ])
-
-    console.log('earaseasde')
-    console.log(id, name)
-    console.log(error)
 }
