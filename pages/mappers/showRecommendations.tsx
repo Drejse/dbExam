@@ -3,6 +3,8 @@ import { supabase } from '../../lib/supabaseConnector';
 
 
 //todo implement user current session
+//todo check if the found category is dynamic or not
+
 supabase.auth.getSession().then((session) => {
     const user = session.data.session?.access_token;
 });
@@ -28,13 +30,15 @@ export async function getLatestRowByUser() {
     return null;
 }
 
-
 export async function fetchDataFromNeo4j(product_id: any) {
     const driver = neo4j.driver('bolt://localhost:7687', neo4j.auth.basic('neo4j', '12345678'));
     const session = driver.session();
 
     try {
-        const result = await session.run(`MATCH (n { uniq_id: '${product_id}'}) RETURN n.categories`);
+        const result = await session.run(`MATCH (n)
+        WHERE n.uniq_id = '${product_id}'
+        RETURN n.categories
+        `);
         const data = result.records.map(record => record.get('n.categories'));
         return data;
     } catch (error) {
