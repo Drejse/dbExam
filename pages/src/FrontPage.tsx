@@ -59,13 +59,6 @@ export async function getRecommendationPosts(idList: any) {
   }
 }
 
-
-
-
-
-
-
-
 export default function Posts(props: Props) {
   const [user, setUser] = useState<String | any>();
   const [posts,] = useState<[Post]>(props.posts);
