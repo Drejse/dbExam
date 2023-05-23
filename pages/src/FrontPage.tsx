@@ -38,7 +38,7 @@ export async function getServerSideProps() {
   }
 }
 
-export async function getRecommendationPosts(arrayOfProducts:any) {
+export async function getRecommendationPosts(arrayOfProducts: any) {
 
   try {
     const response = await fetch(`http://localhost:3000/api/findPostFromUniqId?idList=${arrayOfProducts}`);
@@ -71,7 +71,7 @@ export default function Posts(props: Props) {
     purchaseItem(id, name, user);
   }
 
-  const fetchLatestRow = async (user:any) => {
+  const fetchLatestRow = async (user: any) => {
     getLatestRowByUser(user)
       .then(product_id => {
         if (product_id) {
@@ -81,11 +81,17 @@ export default function Posts(props: Props) {
         }
       })
       .then(async data => {
+
+
         //returns the cateogry based on the product_id from earlier
         console.log(fetchRecommendationsFromNeo4j(data));
         // Assuming you have the parameter value stored in a variable called 'paramValue'
         getRecommendationPosts(data);
-        setRecommendations(data)
+
+        setRecommendations(fetchRecommendationsFromNeo4j(data))
+        const pls = await fetchRecommendationsFromNeo4j(data)
+        setNeo4jRecommendation(pls)
+
       })
       .catch(error => {
         console.error(error);
@@ -104,6 +110,8 @@ export default function Posts(props: Props) {
     // Call the fetchData function
     fetchData();
   }
+
+  console.log(neo4jRecommendation)
 
 
   return (
@@ -140,41 +148,16 @@ export default function Posts(props: Props) {
           ))}
         </div>
 
-
-
-
-
-
-
-
-
-
+        <hr/>
 
         <div>
           <h2>Recommendations</h2>
-          {posts.map((post, index) => (
-            <div className='col-6 mb-2' key={index}>
-              <div className='card p-4' style={{ width: '100%', height: '400px' }}>
-                <div className='card-body d-flex flex-column'>
-                  <h5 className='card-title'>{post.product_name}</h5>
-                  <p
-                    className='card-text mt-auto'
-                    style={{
-                      maxHeight: '300px',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 5, // Adjust the number to control the number of lines
-                      WebkitBoxOrient: 'vertical',
-                    }}
-                  >
-                    {post.description}
-                  </p>
-                </div>
-              </div>
-            </div>
+          {neo4jRecommendation.map((post: any, index: any) => (
+            <p key={index}>{post.name}</p>
           ))}
         </div>
+
+
       </div>
     </>
   );
