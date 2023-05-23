@@ -3,7 +3,7 @@ import { fetchSupabase } from '../mappers/fetchAllSupabase';
 import { fetchAllComments } from '../mappers/fetchAllComments';
 import { fetchNeo4j } from '../../lib/neo4jConnector';
 import { purchaseItem } from '../mappers/purchaseItem';
-import { getLatestRowByUser } from '../mappers/showRecommendations'; // Import the function
+import { fetchDataFromNeo4j, fetchRecommendationsFromNeo4j, getLatestRowByUser } from '../mappers/showRecommendations'; // Import the function
 
 import { supabase } from '../../lib/supabaseConnector';
 
@@ -54,9 +54,24 @@ export default function Posts(props: Props) {
   }
 
   const fetchLatestRow = async () => {
-    const latestRow = await getLatestRowByUser(); // Call the function to get the latest row
-    console.log(latestRow); // Log the result to the console
+    getLatestRowByUser(user)
+      .then(product_id => {
+        if (product_id) {
+          return fetchDataFromNeo4j(product_id);
+        } else {
+          throw new Error('Unable to get the latest product ID');
+        }
+      })
+      .then(data => {
+        //returns the cateogry based on the product_id from earlier
+        console.log(fetchRecommendationsFromNeo4j(data));
+      })
+      .catch(error => {
+        console.error(error);
+      });
   }
+
+
   return (
     <>
       <div className='container'>
