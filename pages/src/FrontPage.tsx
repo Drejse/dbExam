@@ -38,26 +38,18 @@ export async function getServerSideProps() {
   }
 }
 
-export async function getRecommendationPosts(idList: any) {
+export async function getRecommendationPosts(arrayOfProducts:any) {
   try {
-    const productIds = idList.map((item: { uniq_id: any; }) => item.uniq_id); // Extract the uniq_id values from idList
-
-    // Use encodeURIComponent to properly encode the array of product IDs
-    const encodedIds = encodeURIComponent(productIds.join(','));
-
-    // Use the encodedIds in the API request URL
-    const response = await fetch(`http://localhost:3000/api/findPostFromUniqId?idList=${encodedIds}`);
+    const response = await fetch(`http://localhost:3000/api/findPostFromUniqId?idList=${(arrayOfProducts)}`);
     const recommendedPosts = await response.json();
-    return {
-      props: { recommendedPosts: JSON.parse(JSON.stringify(recommendedPosts)) },
-    };
-  } catch (e) {
-    console.error(e);
-    return {
-      props: { recommendedPosts: [] },
-    };
+    return recommendedPosts;
+  } catch (error) {
+    console.error(error);
+    return [];
   }
 }
+
+
 
 export default function Posts(props: Props) {
   const [user, setUser] = useState<String | any>();
@@ -92,7 +84,6 @@ export default function Posts(props: Props) {
         console.log(fetchRecommendationsFromNeo4j(data));
         // Assuming you have the parameter value stored in a variable called 'paramValue'
         const result = await getRecommendationPosts(data);
-        getRecommendationPosts(result)
       })
       .catch(error => {
         console.error(error);
