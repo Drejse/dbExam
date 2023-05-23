@@ -39,8 +39,9 @@ export async function getServerSideProps() {
 }
 
 export async function getRecommendationPosts(arrayOfProducts:any) {
+
   try {
-    const response = await fetch(`http://localhost:3000/api/findPostFromUniqId?idList=${(arrayOfProducts)}`);
+    const response = await fetch(`http://localhost:3000/api/findPostFromUniqId?idList=${arrayOfProducts}`);
     const recommendedPosts = await response.json();
     return recommendedPosts;
   } catch (error) {
@@ -62,7 +63,7 @@ export default function Posts(props: Props) {
   useEffect(() => {
     supabase.auth.getSession().then((session) => {
       setUser(session.data.session?.access_token);
-      fetchLatestRow(); // Call the function to retrieve the latest row
+      fetchLatestRow(session.data.session?.access_token); // Call the function to retrieve the latest row
     });
   }, []);
 
@@ -70,7 +71,7 @@ export default function Posts(props: Props) {
     purchaseItem(id, name, user);
   }
 
-  const fetchLatestRow = async () => {
+  const fetchLatestRow = async (user:any) => {
     getLatestRowByUser(user)
       .then(product_id => {
         if (product_id) {
@@ -83,20 +84,17 @@ export default function Posts(props: Props) {
         //returns the cateogry based on the product_id from earlier
         console.log(fetchRecommendationsFromNeo4j(data));
         // Assuming you have the parameter value stored in a variable called 'paramValue'
-        const result = await getRecommendationPosts(data);
+        getRecommendationPosts(data);
+        setRecommendations(data)
       })
       .catch(error => {
         console.error(error);
       });
 
-
-
-
-
     const fetchData = async () => {
       try {
         // Assuming you have the parameter value stored in a variable called 'paramValue'
-        const result = await getRecommendationPosts(posts);
+        const result = await getRecommendationPosts(recommendations);
         console.log('asda')
         console.log(result);
       } catch (error) {
@@ -105,15 +103,6 @@ export default function Posts(props: Props) {
     };
     // Call the fetchData function
     fetchData();
-
-
-
-
-
-
-
-
-
   }
 
 
