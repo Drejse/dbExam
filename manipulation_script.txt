@@ -1,0 +1,27 @@
+import pandas as pd
+
+# Load CSV file into a pandas dataframe
+df = pd.read_csv('C:/Users/Rober/OneDrive/Softwareudvikler/Database/Exam/amazon_co-ecommerce_sample.csv')
+
+# Select only the columns we're interested in
+df = df[['uniq_id', 'amazon_category_and_sub_category', 'product_name']]
+
+# Convert categories from string to list
+df['amazon_category_and_sub_category'] = df['amazon_category_and_sub_category'].str.split(' > ')
+
+# Remove rows where categories is an empty list
+df = df[df['amazon_category_and_sub_category'].apply(lambda x: isinstance(x, list) and len(x) > 0)]
+
+# Create a new dataframe with separate rows for each category
+new_rows = []
+for index, row in df.iterrows():
+    categories = row['amazon_category_and_sub_category']
+    for category in categories:
+        new_row = {'uniq_id': row['uniq_id'], 'product_name': row['product_name'], 'amazon_category_and_sub_category': category}
+        new_rows.append(new_row)
+new_df = pd.DataFrame(new_rows)
+
+# Save the modified dataframe to a new CSV file
+new_df.to_csv('updated_amazon_data.csv', index=False)
+
+print(new_df)
